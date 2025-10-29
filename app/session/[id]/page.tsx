@@ -123,12 +123,22 @@ export default function SessionPage({ params }: SessionPageProps) {
         >
           ← Back
         </Link>
-        <h1 className="font-caveat text-5xl font-bold text-foreground">Letters for {recipientName}</h1>
-        <p className="text-muted-foreground mt-2">{messages.length} {messages.length === 1 ? "letter" : "letters"} received</p>
+        <h1 className="font-caveat text-5xl font-bold text-foreground text-center pt-5">Letters for {recipientName}</h1>
+        <p className="font-normal text-muted-foreground mt-2 ml-5">{messages.length} {messages.length === 1 ? "letter" : "letters"} received</p>
       </header>
 
       {/* Messages Grid */}
-      <main className="max-w-4xl mx-auto px-8 py-12">
+      <main className="max-w-4xl mx-auto px-8 pt-5 pb-12">
+        <div className="flex justify-center pb-5">
+           {/* Gunakan resolvedId atau sessionId state di sini */}
+          <Link
+            href={`/write/${resolvedId}`}
+            className="px-8 py-3 font-poppins bg-foreground text-primary-foreground rounded-md hover:shadow-lg transition-all duration-300 ease-out shadow-sm"
+          >
+            Write a Letter
+          </Link>
+        </div>
+
         {messages.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {messages.map((message) => (
@@ -142,21 +152,11 @@ export default function SessionPage({ params }: SessionPageProps) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-12 font-poppins">
             <p className="text-muted-foreground mb-6">No letters yet. Be the first to write one!</p>
           </div>
         )}
 
-        {/* Write Letter Button */}
-        <div className="flex justify-center">
-           {/* Gunakan resolvedId atau sessionId state di sini */}
-          <Link
-            href={`/write/${resolvedId}`}
-            className="px-8 py-3 bg-foreground text-primary-foreground rounded-2xl font-medium hover:shadow-lg transition-all duration-300 ease-out shadow-sm"
-          >
-            Write a Letter
-          </Link>
-        </div>
       </main>
     </div>
   )

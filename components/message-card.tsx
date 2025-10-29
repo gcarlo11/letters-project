@@ -18,8 +18,8 @@ export function MessageCard({ id, preview, senderName, createdAt }: MessageCardP
         </div>
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            <p className="font-medium">from {senderName}</p>
-            <p className="text-xs">{createdAt}</p>
+            <p className="font-sans font-medium">from {senderName}</p>
+            <p className="font-sans text-xs">{createdAt}</p>
           </div>
           <div className="text-2xl">→</div>
         </div>
