@@ -2,11 +2,11 @@
 
 import Link from "next/link"
 import { SpotifyEmbed } from "@/components/spotify-embed"
-import { useState, useEffect, use } from "react"; // 1. Impor 'use' dari React
+import { useState, useEffect, use } from "react"; 
 import { supabase } from "@/lib/supabaseClient";
 
 interface MessageDetailPageProps {
-  // params adalah Promise
+  
   params: Promise<{ id: string }>
 }
 
@@ -20,7 +20,7 @@ interface MessageData {
 }
 
 export default function MessageDetailPage({ params }: MessageDetailPageProps) {
-  // 2. Gunakan React.use() untuk mendapatkan nilai 'id'
+  
   const { id: resolvedId } = use(params);
 
   const [messageId, setMessageId] = useState<string>("")
@@ -29,14 +29,14 @@ export default function MessageDetailPage({ params }: MessageDetailPageProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // 3. Gunakan 'resolvedId'
+    
     if (!resolvedId) {
         setLoading(false);
         setError("Message ID tidak ditemukan.");
         return;
     }
-    const messageIdParam = resolvedId; // Gunakan ID yang sudah di-resolve
-    setMessageId(messageIdParam); // Set state jika masih diperlukan
+    const messageIdParam = resolvedId; 
+    setMessageId(messageIdParam); 
 
     const fetchMessage = async () => {
         setLoading(true);
@@ -46,7 +46,7 @@ export default function MessageDetailPage({ params }: MessageDetailPageProps) {
             const { data, error: fetchError } = await supabase
               .from('messages')
               .select('*')
-              .eq('id', messageIdParam) // Gunakan messageIdParam (dari resolvedId)
+              .eq('id', messageIdParam) 
               .single();
 
             if (fetchError) throw fetchError;
@@ -64,10 +64,10 @@ export default function MessageDetailPage({ params }: MessageDetailPageProps) {
 
     fetchMessage();
 
-  // 4. Gunakan 'resolvedId' di dependency array
+  
   }, [resolvedId]);
 
-  // ... sisa kode komponen (if loading, if error, etc.) ...
+  
     if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -114,7 +114,7 @@ export default function MessageDetailPage({ params }: MessageDetailPageProps) {
           href={`/session/${message.session_id}`}
           className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300 ease-out mb-4 inline-block"
         >
-          ← Back to letters
+           Back to letters
         </Link>
       </header>
 

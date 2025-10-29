@@ -3,8 +3,8 @@
 import type React from "react"
 import Link from "next/link"
 import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"; // Impor klien Supabase
-import { useRouter } from 'next/navigation'; // Impor useRouter
+import { supabase } from "@/lib/supabaseClient"; 
+import { useRouter } from 'next/navigation'; 
 
 export default function CreateSessionPage() {
   const router = useRouter();
@@ -12,10 +12,10 @@ export default function CreateSessionPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fungsi untuk membuat session_id unik (contoh sederhana)
+  
   const generateSessionId = (name: string): string => {
     const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 30);
-    const randomSuffix = Math.random().toString(36).substring(2, 8); // Tambahkan string acak pendek
+    const randomSuffix = Math.random().toString(36).substring(2, 8); 
     return `${sanitizedName}-${randomSuffix}`;
   };
 
@@ -32,39 +32,39 @@ export default function CreateSessionPage() {
     const newSessionId = generateSessionId(recipientName);
 
     try {
-      // Coba masukkan data sesi baru ke Supabase
+      
       const { data, error: insertError } = await supabase
         .from('sessions')
         .insert({
           name: recipientName.trim(),
           session_id: newSessionId
-          // created_at dan expired_at akan diisi default oleh database
+          
         })
-        .select('session_id') // Pilih session_id yang baru dibuat untuk konfirmasi/redirect
-        .single(); // Harapkan satu baris hasil
+        .select('session_id') 
+        .single(); 
 
       if (insertError) {
-        // Handle kemungkinan error unik session_id (meski kecil kemungkinannya dengan suffix acak)
-        if (insertError.code === '23505') { // Kode error PostgreSQL untuk unique violation
+        
+        if (insertError.code === '23505') { 
           setError("Gagal membuat sesi, ID sesi sudah ada. Coba lagi.");
-          // Mungkin perlu generate ulang session_id di sini jika mau otomatis coba lagi
+          
         } else {
-          throw insertError; // Lemparkan error lain
+          throw insertError; 
         }
       } else if (data) {
-        // Berhasil! Redirect ke halaman sesi baru
+        
         router.push(`/session/${data.session_id}`);
       } else {
-         // Jika tidak ada error tapi tidak ada data (kasus aneh)
+         
          throw new Error("Gagal membuat sesi, tidak ada data yang dikembalikan.");
       }
 
     } catch (err: any) {
       console.error("Error creating session:", err);
       setError(err.message || "Gagal membuat halaman sesi.");
-      setLoading(false); // Pastikan loading false jika error
+      setLoading(false); 
     }
-    // Tidak perlu setLoading(false) jika sukses karena akan redirect
+    
   };
 
   return (
@@ -75,7 +75,7 @@ export default function CreateSessionPage() {
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300 ease-out mb-4 inline-block"
         >
-          ← Back to Home
+         Back to Home
         </Link>
         <h1 className="font-caveat text-5xl font-bold text-foreground">Create a Letter Page</h1>
         <p className="text-muted-foreground mt-2">Enter the name of the person you want to receive letters.</p>

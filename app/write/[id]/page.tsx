@@ -25,14 +25,14 @@ export default function WritePage({ params }: WritePageProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // 3. Gunakan 'resolvedId'
+   
     if (resolvedId) {
-        setSessionId(resolvedId); // Set state dengan ID yang sudah di-resolve
+        setSessionId(resolvedId);
         const checkSession = async () => {
             const { data, error } = await supabase
                 .from('sessions')
                 .select('session_id')
-                .eq('session_id', resolvedId) // Gunakan resolvedId untuk query
+                .eq('session_id', resolvedId) 
                 .single();
             if (error || !data) {
                 setError("Session ID tidak valid.");
@@ -42,13 +42,13 @@ export default function WritePage({ params }: WritePageProps) {
     } else {
         setError("Session ID tidak ditemukan di URL.");
     }
-  // 4. Gunakan 'resolvedId' di dependency array
+
   }, [resolvedId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (error && error.includes("tidak valid")) return;
-    if (!sessionId) { // Tambahkan pengecekan sessionId state
+    if (!sessionId) { 
         setError("Session ID belum siap. Mohon tunggu sebentar.");
         return;
     }
@@ -62,7 +62,7 @@ export default function WritePage({ params }: WritePageProps) {
         .from('messages')
         .insert([
             {
-                session_id: sessionId, // Gunakan sessionId dari state
+                session_id: sessionId, 
                 sender_name: senderName.trim() === '' ? 'Anonymous' : senderName.trim(),
                 message: message.trim(),
                 spotify_url: spotifyUrl.trim() === '' ? null : spotifyUrl.trim()
@@ -75,7 +75,7 @@ export default function WritePage({ params }: WritePageProps) {
         setSubmitted(true)
 
         setTimeout(() => {
-            router.push(`/session/${sessionId}`); // Gunakan sessionId dari state
+            router.push(`/session/${sessionId}`); 
         }, 2000);
 
     } catch (err: any) {
@@ -85,8 +85,6 @@ export default function WritePage({ params }: WritePageProps) {
     }
   }
 
-  // ... sisa kode komponen (if submitted, if error, return JSX) ...
-  // Pastikan link "Cancel" dan "Back" juga menggunakan sessionId state
       if (submitted) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -118,12 +116,12 @@ export default function WritePage({ params }: WritePageProps) {
       {/* Header */}
       <header className="border-b border-muted px-8 py-6">
         <Link
-          href={sessionId ? `/session/${sessionId}` : '/'} // Gunakan state sessionId
+          href={sessionId ? `/session/${sessionId}` : '/'}
           className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300 ease-out mb-4 inline-block"
         >
-          ← Back
+           Back to home
         </Link>
-        <h1 className="font-caveat text-5xl font-bold text-foreground">Write Your Letter</h1>
+        <h1 className="font-caveat text-5xl font-bold text-center text-foreground">Write Your Letter</h1>
       </header>
 
       {/* Form */}
@@ -192,7 +190,7 @@ export default function WritePage({ params }: WritePageProps) {
               {loading ? "Sending..." : "Send Letter"}
             </button>
             <Link
-              href={sessionId ? `/session/${sessionId}` : '/'} // Gunakan state sessionId
+              href={sessionId ? `/session/${sessionId}` : '/'} 
               className="px-8 py-3 border-2 border-foreground text-foreground rounded-2xl font-medium hover:bg-secondary transition-all duration-300 ease-out"
             >
               Cancel

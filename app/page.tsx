@@ -2,24 +2,24 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"; // Impor supabase
-import { useRouter } from 'next/navigation'; // Impor useRouter
+import { supabase } from "@/lib/supabaseClient"; 
+import { useRouter } from 'next/navigation'; 
 
 export default function HomePage() {
-  const router = useRouter(); // Inisialisasi router
+  const router = useRouter(); 
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState<string>(""); // Tambahkan state untuk name
-  const [error, setError] = useState<string | null>(null); // Tambahkan state untuk error
+  const [name, setName] = useState<string>(""); 
+  const [error, setError] = useState<string | null>(null); 
 
-  // Fungsi untuk membuat session_id unik (sama seperti di create page)
+  
   const generateSessionId = (name: string): string => {
     const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 30);
     const randomSuffix = Math.random().toString(36).substring(2, 8);
     return `${sanitizedName}-${randomSuffix}`;
   };
 
-  // Fungsi createSession (sama seperti di create page)
+  
   const createSession = async () => {
     if (!name.trim()) {
       setError("Nama tidak boleh kosong.");
@@ -58,31 +58,31 @@ export default function HomePage() {
       setError(err.message || "Gagal membuat halaman sesi.");
       setLoading(false);
     }
-    // Tidak perlu setLoading(false) jika sukses karena akan redirect
+    
   };
 
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-8 py-6">
+      <nav className="flex items-center justify-between px-10 py-4 border-b border-neutral-300">
         <div className="font-caveat text-3xl font-bold text-foreground">lettersforme</div>
         <div className="flex gap-8 items-center">
           {/* Link Navbar tidak perlu diubah */}
            <Link
-             href="/create" // Sebaiknya arahkan ke bagian form di bawah, atau hapus jika tidak relevan
+             href="/create" 
              className="text-sm font-normal text-foreground hover:text-muted-foreground transition-all duration-300 ease-out"
            >
              Create
            </Link>
            <Link
-             href="#about" // Sesuaikan ID elemen jika perlu
+             href="#about" 
              className="text-sm font-normal text-foreground hover:text-muted-foreground transition-all duration-300 ease-out"
            >
              About
            </Link>
            <Link
-             href="#support" // Sesuaikan ID elemen jika perlu
+             href="#support" 
              className="text-sm font-normal text-foreground hover:text-muted-foreground transition-all duration-300 ease-out"
            >
              Support
@@ -92,12 +92,12 @@ export default function HomePage() {
 
       {/* Hero Section dengan Form */}
       {/* Tambahkan id="create" jika link navbar Create mengarah ke sini */}
-      <div id="create" className="flex-1 bg-gradient-to-br bg-white flex items-center justify-center p-8 gap-12 flex-wrap grid-cols-2">
+      <div id="create" className="flex bg-white items-center justify-center p-8 gap-25 grow">
         
         <div className="max-w-lg w-full">
-          <div className="text-center">
-            <h1 className={`text-5xl text-bold text-gray-800 mb-2 font-caveat`}>Hallo aku tampan sekalsi wiafadfiaof </h1>
-            <p className="text-gray-600">Write. Listen. Feel.</p>
+          <div className="text-center mb-12">
+            <h1 className={`text-[38px] text-bold text-gray-800 mb-2 font-caveat`}>This is your box of letters. <br />Every message here is a fragment of someone’s thoughts, written for you.</h1>
+            <p className="font-poppins text-gray-600">Write. Listen. Feel.</p>
           </div>
         </div>
 
@@ -119,17 +119,17 @@ export default function HomePage() {
               placeholder="Enter recipient's name" 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !loading && name.trim() && createSession()} // Tambahkan validasi
-              className="w-full px-4 py-3 font-poppins text-sm rounded-md border border-black focus:border-purple-400 focus:outline-none mb-4 bg-secondary text-foreground placeholder:text-muted-foreground" // Sesuaikan styling
+              onKeyPress={(e) => e.key === 'Enter' && !loading && name.trim() && createSession()} 
+              className="w-full px-4 py-3 font-poppins text-sm rounded-md border border-black focus:border-purple-400 focus:outline-none mb-4 bg-secondary text-foreground placeholder:text-muted-foreground" 
               disabled={loading}
             />
 
             <button
               onClick={createSession}
               disabled={loading || !name.trim()}
-              className="w-full bg-gradient-to-r bg-black text-white font-poppins text-sm py-3 rounded-md font-semibold hover:shadow-lg transition-all disabled:opacity-80 disabled:cursor-not-allowed" // Pertimbangkan styling dari globals.css Anda
+              className="w-full bg-linear-to-r bg-black text-white font-poppins text-sm py-3 rounded-md font-medium hover:shadow-lg transition-all disabled:opacity-80 disabled:cursor-not-allowed" 
             >
-              {loading ? 'Creating...' : 'Create Page'}
+              {loading ? 'Creating...' : 'Create My Letter Box'}
             </button>
           </div>
 
@@ -140,8 +140,8 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="px-8 py-4 border-t border-muted text-center text-sm text-muted-foreground">
-        <p>LettersForMe Support Us</p>
+      <footer className="px-8 py-4 border-t border-neutral-300 text-center text-sm text-muted-foreground">
+        <p>©LettersForMe</p>
       </footer>
     </div>
   )
