@@ -1,50 +1,93 @@
 "use client"
 
 import type React from "react"
-
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"; // 1. Impor 'use' dari React
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from 'next/navigation';
 
 interface WritePageProps {
+  // params adalah Promise
   params: Promise<{ id: string }>
 }
 
 export default function WritePage({ params }: WritePageProps) {
+  // 2. Gunakan React.use() untuk mendapatkan nilai 'id'
+  const { id: resolvedId } = use(params);
+
+  const router = useRouter();
   const [sessionId, setSessionId] = useState<string>("")
   const [senderName, setSenderName] = useState<string>("")
   const [message, setMessage] = useState<string>("")
   const [spotifyUrl, setSpotifyUrl] = useState<string>("")
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unwrapParams = async () => {
-      const { id } = await params
-      setSessionId(id)
+    // 3. Gunakan 'resolvedId'
+    if (resolvedId) {
+        setSessionId(resolvedId); // Set state dengan ID yang sudah di-resolve
+        const checkSession = async () => {
+            const { data, error } = await supabase
+                .from('sessions')
+                .select('session_id')
+                .eq('session_id', resolvedId) // Gunakan resolvedId untuk query
+                .single();
+            if (error || !data) {
+                setError("Session ID tidak valid.");
+            }
+        };
+        checkSession();
+    } else {
+        setError("Session ID tidak ditemukan di URL.");
     }
-    unwrapParams()
-  }, [params])
+  // 4. Gunakan 'resolvedId' di dependency array
+  }, [resolvedId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    if (error && error.includes("tidak valid")) return;
+    if (!sessionId) { // Tambahkan pengecekan sessionId state
+        setError("Session ID belum siap. Mohon tunggu sebentar.");
+        return;
+    }
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      setSubmitted(true)
-      // Reset form
-      setSenderName("")
-      setMessage("")
-      setSpotifyUrl("")
-      // Show success message for 3 seconds then redirect
-      setTimeout(() => {
-        window.location.href = `/session/${sessionId}`
-      }, 2000)
-    }, 1000)
+
+    setLoading(true);
+    setError(null);
+
+    try {
+        const { error: insertError } = await supabase
+        .from('messages')
+        .insert([
+            {
+                session_id: sessionId, // Gunakan sessionId dari state
+                sender_name: senderName.trim() === '' ? 'Anonymous' : senderName.trim(),
+                message: message.trim(),
+                spotify_url: spotifyUrl.trim() === '' ? null : spotifyUrl.trim()
+            }
+        ]);
+
+        if (insertError) throw insertError;
+
+        setLoading(false)
+        setSubmitted(true)
+
+        setTimeout(() => {
+            router.push(`/session/${sessionId}`); // Gunakan sessionId dari state
+        }, 2000);
+
+    } catch (err: any) {
+        console.error("Error submitting message:", err);
+        setError(err.message || "Gagal mengirim surat.");
+        setLoading(false);
+    }
   }
 
-  if (submitted) {
+  // ... sisa kode komponen (if submitted, if error, return JSX) ...
+  // Pastikan link "Cancel" dan "Back" juga menggunakan sessionId state
+      if (submitted) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -55,12 +98,27 @@ export default function WritePage({ params }: WritePageProps) {
     )
   }
 
+   // Tampilkan error jika ada sebelum form
+   if (error && (error.includes("tidak valid") || error.includes("tidak ditemukan"))) {
+      return (
+      <div className="min-h-screen bg-white flex items-center justify-center text-center">
+          <div>
+              <p className="text-destructive text-xl mb-4">{error}</p>
+              <Link href="/" className="text-foreground hover:text-muted-foreground transition-all duration-300 ease-out">
+              ← Kembali ke Beranda
+              </Link>
+          </div>
+      </div>
+      )
+  }
+
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="border-b border-muted px-8 py-6">
         <Link
-          href={`/session/${sessionId}`}
+          href={sessionId ? `/session/${sessionId}` : '/'} // Gunakan state sessionId
           className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300 ease-out mb-4 inline-block"
         >
           ← Back
@@ -71,6 +129,12 @@ export default function WritePage({ params }: WritePageProps) {
       {/* Form */}
       <main className="max-w-2xl mx-auto px-8 py-12">
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Tampilkan pesan error di form */}
+          {error && !error.includes("tidak valid") && !error.includes("tidak ditemukan") && (
+            <div className="p-4 bg-destructive/10 text-destructive border border-destructive rounded-lg">
+                {error}
+            </div>
+          )}
           {/* Sender Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
@@ -83,7 +147,6 @@ export default function WritePage({ params }: WritePageProps) {
               onChange={(e) => setSenderName(e.target.value)}
               placeholder="Enter your name (or stay anonymous)"
               className="w-full px-4 py-3 bg-secondary border border-muted rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground transition-all duration-300 ease-out"
-              required
             />
           </div>
 
@@ -123,13 +186,13 @@ export default function WritePage({ params }: WritePageProps) {
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !!(error && (error.includes("tidak valid") || error.includes("tidak ditemukan")))}
               className="flex-1 px-8 py-3 bg-foreground text-primary-foreground rounded-2xl font-medium hover:shadow-lg transition-all duration-300 ease-out shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Sending..." : "Send Letter"}
             </button>
             <Link
-              href={`/session/${sessionId}`}
+              href={sessionId ? `/session/${sessionId}` : '/'} // Gunakan state sessionId
               className="px-8 py-3 border-2 border-foreground text-foreground rounded-2xl font-medium hover:bg-secondary transition-all duration-300 ease-out"
             >
               Cancel
@@ -139,4 +202,5 @@ export default function WritePage({ params }: WritePageProps) {
       </main>
     </div>
   )
+
 }

@@ -12,7 +12,7 @@ export default function HomePage() {
       <nav className="flex items-center justify-between px-8 py-6 border-b border-muted">
         <div className="font-caveat text-3xl font-bold text-foreground">lettersforme</div>
         <div className="flex gap-8 items-center">
-          <Link
+          <Linkcls
             href="#create"
             className="text-sm font-medium text-foreground hover:text-muted-foreground transition-all duration-300 ease-out"
           >
@@ -43,18 +43,12 @@ export default function HomePage() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-20">
+        <div className="flex flex-col sm:flex-row mb-20">
           <Link
             href="/create"
             className="px-8 py-3 bg-foreground text-primary-foreground rounded-2xl font-medium hover:shadow-lg transition-all duration-300 ease-out shadow-sm"
           >
             Create Your Letter
-          </Link>
-          <Link
-            href="/browse"
-            className="px-8 py-3 border-2 border-foreground text-foreground rounded-2xl font-medium hover:bg-secondary transition-all duration-300 ease-out"
-          >
-            Browse the Letters
           </Link>
         </div>
       </section>
@@ -105,7 +99,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="px-8 py-8 border-t border-muted text-center text-sm text-muted-foreground">
-        <p>Made with care. Share your unsent words.</p>
+        <p>LettersForMe Support Us</p>
       </footer>
     </div>
   )
